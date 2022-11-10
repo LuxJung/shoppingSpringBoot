@@ -3,7 +3,42 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <div th:fragment="header">
-    <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
+    <nav>
+        <a href="/">Shop</a>
+
+        <div >
+            <ul>
+                <li sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
+                    <a href="/admin/item/new">상품 등록</a>
+                </li>
+                <li sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
+                    <a href="/admin/items">상품 관리</a>
+                </li>
+                <li sec:authorize="isAuthenticated()">
+                    <a href="/cart">장바구니</a>
+                </li>
+                <li sec:authorize="isAuthenticated()">
+                    <a href="/orders">구매이력</a>
+                </li>
+                <li sec:authorize="isAnonymous()">
+                    <a href="/members/login">로그인</a>
+                </li>
+                <li sec:authorize="isAuthenticated()">
+                    <a href="/members/logout">로그아웃</a>
+                </li>
+            </ul>
+            <form th:action="@{/}" method="get">
+                <input name="searchQuery" type="search" placeholder="Search" >
+                <button type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+</div>
+
+
+
+<!--원본
+<nav class="navbar navbar-expand-sm bg-primary navbar-dark">
         <button class="navbar-toggler" type="button" data-toggle="collapse"
                 data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03"
                 aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +73,5 @@
             </form>
         </div>
     </nav>
-</div>
-
+    -->
 </html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout0}">
+      layout:decorate="~{layouts/layoutMain}">
 
 <!-- 사용자 CSS 추가 -->
 <th:block layout:fragment="css">
@@ -29,6 +29,10 @@
         .center{
             text-align:center;
         }
+        #mainWrap{
+            margin-top: 56px;
+            height: 80vh;
+        }
     </style>
 </th:block>
 <th:block layout:fragment="script">
@@ -41,8 +45,8 @@
             bindDomEvent();
 
         $('#fullpage').fullpage({
-            sectionsColor: ['#1bbc9b', '#4BBFC3', '#7BAABE'],
-            anchors: ['sec1', 'sec2', 'sec3'],
+            sectionsColor: ['#4e4e4e', '#000000', '#0A0ABE', '#0A0ABE'],
+            anchors: ['sec1', 'sec2', 'sec3', 'sec4'],
             menu: '#menu',
             scrollingSpeed: 1000,
             //scrollBar: true,
@@ -65,7 +69,7 @@
         });
 
         // swiper
-        var length = $(".sec2 .swiper-slide").length;
+        var length = $(".sec3 .swiper-slide").length;
         var swiper = new Swiper('.swiper-container', {
             slidesPerView: 1,
             spaceBetween: 0,
@@ -117,30 +121,16 @@
         }
     </script>
 </th:block>
-<div layout:fragment="content0">
-
-    <div class="section sec1 active">
-        <h1>Section1</h1>
+<div layout:fragment="content" >
+    <div id="mainWrap">
+    <div id="carouselControls" class="section sec1 active  carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active item">
+                <img class="d-block w-100 banner" src="https://user-images.githubusercontent.com/13268420/112147492-1ab76200-8c20-11eb-8649-3d2f282c3c02.png" alt="First slide">
+            </div>
+        </div>
     </div>
     <div class="section sec2">
-        <div class="swiper-container">
-            <div class="swiper-wrapper">
-                <div class="swiper-slide"><h1>Section2</h1>Slide 1</div>
-                <div class="swiper-slide"><h1>Section2</h1>Slide 2</div>
-            </div>
-            <!-- Add Pagination -->
-            <div class="swiper-pagination"></div>
-        </div>
-    </div>
-    <div class="section sec3">
-        <div id="carouselControls" class="carousel slide margin" data-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active item">
-                    <img class="d-block w-100 banner" src="https://user-images.githubusercontent.com/13268420/112147492-1ab76200-8c20-11eb-8649-3d2f282c3c02.png" alt="First slide">
-                </div>
-            </div>
-        </div>
-
         <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
         <div th:if="${not #strings.isEmpty(itemSearchDto.searchQuery)}" class="center">
             <p class="h3 font-weight-bold" th:text="${itemSearchDto.searchQuery} + '검색 결과'"></p>
@@ -186,7 +176,38 @@
         </div>
     </div>
 
+    <div class="section sec3">
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide"><h1>Section2</h1>Slide 1</div>
+                <div class="swiper-slide"><h1>Section2</h1>Slide 2</div>
+            </div>
+            <!-- Add Pagination -->
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+    </div>
 
 
+
+
+</div>
+<div layout:fragment="content0">
+    <div class="section sec1 active">
+        <h1>Section1</h1>
+    </div>
+    <div class="section sec2">
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide"><h1>Section2</h1>Slide 1</div>
+                <div class="swiper-slide"><h1>Section2</h1>Slide 2</div>
+            </div>
+            <!-- Add Pagination -->
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+    <div class="section sec3">
+
+    </div>
 </div>
 </html>

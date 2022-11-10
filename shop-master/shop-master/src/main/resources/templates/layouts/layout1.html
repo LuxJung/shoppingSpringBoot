@@ -4,33 +4,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-
+    <link th:href="@{/css/reset.css}" rel="stylesheet">
     <!-- CSS only -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/2.9.7/jquery.fullpage.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.css" />
 
     <!-- JS, Popper.js, and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/2.9.7/jquery.fullpage.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.min.js"></script>
 
     <th:block layout:fragment="script"></th:block>
     <th:block layout:fragment="css"></th:block>
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/2.9.7/jquery.fullpage.css" />
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.css" />
     <link th:href="@{/css/layout1.css}" rel="stylesheet">
 
 </head>
 <body>
 
-    <div th:replace="fragments/header::header"></div>
-    <div layout:fragment="content0" class="fullpage">
+    <div th:replace="fragments/header::header" ></div>
 
-    </div>
+    <div layout:fragment="content" id="fullpage"></div>
 
-    <div layout:fragment="content" class="content">
 
-    </div>
+<!--
+    <div layout:fragment="content" id="fullpage" class="content"></div>
+    <div layout:fragment="content0" id="fullpage"></div>
+-->
 
     <div th:replace="fragments/footer::footer"></div>
 
