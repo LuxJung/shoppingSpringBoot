@@ -3,10 +3,12 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
+  <link rel="icon" href="/images/favicon.ico">
   <meta charset="UTF-8">
   <title>메인입니다.</title>
-  <link th:href="@{/css/reset.css}" rel="stylesheet">
-  <link th:href="@{/css/fullPage.css}" rel="stylesheet">
+  <!--<link th:href="@{/css/reset.css}" rel="stylesheet">-->
+  <!--<link th:href="@{/css/fullPage.css}" rel="stylesheet">-->
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/2.9.7/jquery.fullpage.css">
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.0.6/swiper-bundle.css" />
 
   <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -20,10 +22,6 @@
 
 </head>
 <body>
-  <div th:replace="fragments/header::header" ></div>
-
-  <div layout:fragment="content" id="fullpage"></div>
-
-  <div th:replace="fragments/footer::footer"></div>
+  <div layout:fragment="main" id="fullpage"></div>
 </body>
 </html>

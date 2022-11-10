@@ -4,11 +4,11 @@ html {
     margin: 0;
 }
 body {
-    min-height: 50%;
+    min-height: 100%;
 }
 .footer { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; padding: 15px 0;  text-align: center;}
 .content{    margin-bottom:100px;    margin-top: 50px;    margin-left: 200px;    margin-right: 200px;}
-#fullpage {     width:100%;     height:50%;   }
+#fullpage {     width:100%;     height:100%;   }
 #menu li {  display: inline-block;  margin: 10px;  color: #000;  background: #fff;  background: rgba(255, 255, 255, 0.5);  -webkit-border-radius: 10px;  border-radius: 10px;}
 #menu li.active {  background: #666;  background: rgba(0, 0, 0, 0.5);  color: #fff;}
 #menu li a {  text-decoration: none;  color: #000;}
@@ -17,6 +17,6 @@ body {
 #menu li a, #menu li.active a {  padding: 9px 18px;  display: block;}
 #menu li.active a {  color: #fff;}
 #menu {  position: fixed;  top: 0;  left: 0;  height: 40px;  z-index: 70;  width: 100%;  padding: 0;  margin: 0;}
-.section {font-size: 3vw; text-align:center}
+.section {font-size: 3vw; text-align:center;width: 100%;}
 .swiper-container {  width: 100%;  height: 100%;}
 .swiper-slide {  display: flex;  flex-direction: column;  align-items: center;  justify-content: center;  width: 100%;  height: 100%;  }

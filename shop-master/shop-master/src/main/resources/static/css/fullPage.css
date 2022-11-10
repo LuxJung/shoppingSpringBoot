@@ -21,7 +21,6 @@ html.fp-enabled,
     display: block;
 }
 .fp-slides {
-    z-index:1;
     height: 100%;
     overflow: hidden;
     position: relative;
@@ -55,7 +54,7 @@ html.fp-enabled,
     width: 0;
     height: 0;
     border-style: solid;
-    margin-top: -38px;
+    margin-top: 0px;
     -webkit-transform: translate3d(0,0,0);
     -ms-transform: translate3d(0,0,0);
     transform: translate3d(0,0,0);
@@ -88,7 +87,7 @@ html.fp-enabled,
 #fp-nav {
     position: fixed;
     z-index: 100;
-    margin-top: -32px;
+    margin-top: 0px;
     top: 50%;
     opacity: 1;
     -webkit-transform: translate3d(0,0,0);
