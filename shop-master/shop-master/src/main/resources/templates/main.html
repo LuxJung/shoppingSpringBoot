@@ -11,6 +11,15 @@
             height: 350px;
         }
 
+        .scrollable-content {
+            overflow-x: hidden;
+            scrollbar-face-color: black;
+            width: 100%;
+            height: 100%;
+            padding: 5vh;
+            box-sizing: border-box;
+
+        }
 
         .banner {
             position: absolute;
@@ -37,120 +46,134 @@
     </style>
 </th:block>
 <th:block layout:fragment="script">
-<script th:inline="javascript">
-    $(document).ready(function () {
-        var errorMessage = [[${errorMessage}]];
-        if (errorMessage != null) {
-            alert(errorMessage);
+    <script th:inline="javascript">
+        $(document).ready(function () {
+            var errorMessage = [[${errorMessage}]];
+            if (errorMessage != null) {
+                alert(errorMessage);
+            }
+            bindDomEvent();
+
+            $('#fullpage').fullpage({
+                autoScrolling: true,
+                scrollHorizontally: true,
+                sectionsColor: ['#fff', '#000000', '#cccccc', '#999', '#666'],
+                anchors: ['sec1', 'sec2', 'sec3', 'sec4', 'sec5'],
+                menu: '#menu',
+                normalScrollElements: '.scrollable-content',
+                scrollOverflow: true,
+                scrollingSpeed: 600,
+                //scrollBar: true,
+                onLeave: function (origin, destination, direction) {
+                    // 빠른전환으로 이벤트중복시 fullpage와 swiper전환시점 분리막기
+                    $('#fullpage').on('scroll touchmove mousewheel', function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        return false;
+                    });
+                    swiper.mousewheel.disable();
+                }, afterLoad: function (anchorLink, index) {
+                    // 전환이 끝난후 이벤트풀기
+                    $('#fullpage').off('scroll mousewheel');
+                    if (!$(".fp-completely .swiper-wrapper").length > 0) $('#fullpage').off('touchmove'); // 모바일분기
+                    if (swiper) swiper.mousewheel.enable();
+                    // if(index == 4) $.fn.fullpage.setAllowScrolling(false); // 마지막센션에서 올라올때 자동방지
+
+                }
+
+
+            });
+
+            $(".scrollable-content").scroll( function() {
+                var elem = $(".scrollable-content");
+
+                if ( elem[0].scrollHeight - elem.scrollTop() == elem.outerHeight())
+                {
+                    alert("End of Yellow");
+                }
+            });
+
+            // swiper
+            var length = $(".swiper-slide").length;
+            var swiper = new Swiper('.swiper-container', {
+                slidesPerView: 1,
+                spaceBetween: 0,
+                freeMode: false,
+                speed: 1000,
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                mousewheel: true,
+                on: {
+                    slideChange: function () {
+                        var idx = this.activeIndex;
+                        // 처음과 마지막 슬라이드가 아닐경우 fullpage전환 막기
+                        if (this.activeIndex != 0 && idx != length) $.fn.fullpage.setAllowScrolling(false);
+                        if (length == 2 && idx == 0) $.fn.fullpage.setAllowScrolling(false) //슬라이드가 2개밖에 없을때
+                        // console.log('즉시 : ' + idx);
+                    },
+                    slideChangeTransitionEnd: function () {
+                        var idx = this.activeIndex;
+                        // 처음과 마지막 슬라이드일 경우 fullpage전환 풀기
+                        if (idx == 0 || idx >= length - 1) $.fn.fullpage.setAllowScrolling(true);
+                        // console.log('전환후 : ' + idx);
+                    },
+                    touchMove: function (e) {
+                        var startY = e.touches.startY;
+                        setTimeout(function () {
+                            if (startY > e.touches.currentY) swiper.slideNext();
+                            else swiper.slidePrev();
+                        }, 100);
+                    },
+                },
+            });
+        });
+
+        function bindDomEvent() {
+            $(".custom-file-input").on("change", function () {
+                var fileName = $(this).val().split("\\").pop();  //이미지 파일명
+                var fileExt = fileName.substring(fileName.lastIndexOf(".") + 1); // 확장자 추출
+                fileExt = fileExt.toLowerCase(); //소문자 변환
+
+                if (fileExt != "jpg" && fileExt != "jpeg" && fileExt != "gif"
+                    && fileExt != "png" && fileExt != "bmp") {
+                    alert("이미지 파일만 등록이 가능합니다.");
+                    return;
+                }
+                $(this).siblings(".custom-file-label").html(fileName);
+            });
         }
-        bindDomEvent();
-
-        $('#fullpage').fullpage({
-            autoScrolling:true,
-            scrollHorizontally: true,
-            sectionsColor: ['#fff', '#000000', '#aaaacb', '#999', '#666'],
-            anchors: ['sec1', 'sec2', 'sec3', 'sec4', 'sec5'],
-            menu: '#menu',
-            scrollingSpeed: 600,
-            //scrollBar: true,
-            onLeave: function (origin, destination, direction) {
-                // 빠른전환으로 이벤트중복시 fullpage와 swiper전환시점 분리막기
-                $('#fullpage').on('scroll touchmove mousewheel', function (event) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    return false;
-                });
-                swiper.mousewheel.disable();
-            }, afterLoad: function (anchorLink, index) {
-                // 전환이 끝난후 이벤트풀기
-                $('#fullpage').off('scroll mousewheel');
-                if (!$(".fp-completely .swiper-wrapper").length > 0) $('#fullpage').off('touchmove'); // 모바일분기
-                if (swiper) swiper.mousewheel.enable();
-                // if(index == 4) $.fn.fullpage.setAllowScrolling(false); // 마지막센션에서 올라올때 자동방지
-            }
-        });
-
-        // swiper
-        var length = $(".swiper-slide").length;
-        var swiper = new Swiper('.swiper-container', {
-            slidesPerView: 1,
-            spaceBetween: 0,
-            freeMode: false,
-            speed: 1000,
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-            mousewheel: true,
-            on: {
-                slideChange: function () {
-                    var idx = this.activeIndex;
-                    // 처음과 마지막 슬라이드가 아닐경우 fullpage전환 막기
-                    if (this.activeIndex != 0 && idx != length) $.fn.fullpage.setAllowScrolling(false);
-                    if (length == 2 && idx == 0) $.fn.fullpage.setAllowScrolling(false) //슬라이드가 2개밖에 없을때
-                    // console.log('즉시 : ' + idx);
-                },
-                slideChangeTransitionEnd: function () {
-                    var idx = this.activeIndex;
-                    // 처음과 마지막 슬라이드일 경우 fullpage전환 풀기
-                    if (idx == 0 || idx >= length - 1) $.fn.fullpage.setAllowScrolling(true);
-                    // console.log('전환후 : ' + idx);
-                },
-                touchMove: function (e) {
-                    var startY = e.touches.startY;
-                    setTimeout(function () {
-                        if (startY > e.touches.currentY) swiper.slideNext();
-                        else swiper.slidePrev();
-                    }, 100);
-                },
-            },
-        });
-    });
-
-    function bindDomEvent() {
-        $(".custom-file-input").on("change", function () {
-            var fileName = $(this).val().split("\\").pop();  //이미지 파일명
-            var fileExt = fileName.substring(fileName.lastIndexOf(".") + 1); // 확장자 추출
-            fileExt = fileExt.toLowerCase(); //소문자 변환
-
-            if (fileExt != "jpg" && fileExt != "jpeg" && fileExt != "gif"
-                && fileExt != "png" && fileExt != "bmp") {
-                alert("이미지 파일만 등록이 가능합니다.");
-                return;
-            }
-            $(this).siblings(".custom-file-label").html(fileName);
-        });
-    }
-</script>
+    </script>
 </th:block>
 <div layout:fragment="main">
     <div class="section fp-auto-height active sec1 ">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="/"><img th:src="@{/img/logo.png}" width="50" height="50" alt="logo"/></a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li sec:authorize="hasAnyAuthority('ROLE_ADMIN')" class="nav-item">
-                    <a class="nav-link" href="/admin/item/new">상품 등록</a>
-                </li>
-                <li sec:authorize="hasAnyAuthority('ROLE_ADMIN')" class="nav-item">
-                    <a class="nav-link" href="/admin/items">상품 관리</a>
-                </li>
-                <li sec:authorize="isAuthenticated()" class="nav-item">
-                    <a class="nav-link" href="/cart">장바구니</a>
-                </li>
-                <li sec:authorize="isAuthenticated()" class="nav-item">
-                    <a class="nav-link"href="/orders">구매이력</a>
-                </li>
-            </ul>
-            <ul class="navbar-nav justify-content-end mr-3">
-                <li sec:authorize="isAnonymous()" class="nav-item">
-                    <a class="nav-link" href="/members/login">로그인</a>
-                </li>
-                <li sec:authorize="isAuthenticated()" class="nav-item">
-                    <a class="nav-link" href="/members/logout">로그아웃</a>
-                </li>
-            </ul>
-        </div>
+            <a class="navbar-brand" href="/"><img th:src="@{/img/logo.png}" width="50" height="50" alt="logo"/></a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li sec:authorize="hasAnyAuthority('ROLE_ADMIN')" class="nav-item">
+                        <a class="nav-link" href="/admin/item/new">상품 등록</a>
+                    </li>
+                    <li sec:authorize="hasAnyAuthority('ROLE_ADMIN')" class="nav-item">
+                        <a class="nav-link" href="/admin/items">상품 관리</a>
+                    </li>
+                    <li sec:authorize="isAuthenticated()" class="nav-item">
+                        <a class="nav-link" href="/cart">장바구니</a>
+                    </li>
+                    <li sec:authorize="isAuthenticated()" class="nav-item">
+                        <a class="nav-link" href="/orders">구매이력</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav justify-content-end mr-3">
+                    <li sec:authorize="isAnonymous()" class="nav-item">
+                        <a class="nav-link" href="/members/login">로그인</a>
+                    </li>
+                    <li sec:authorize="isAuthenticated()" class="nav-item">
+                        <a class="nav-link" href="/members/logout">로그아웃</a>
+                    </li>
+                </ul>
+            </div>
         </nav>
         <div class="btn-toolbar justify-content-end m-3">
             <div class="input-group">
@@ -162,9 +185,8 @@
     </div>
 
 
-
     <div class="section fp-slidesContainer fp-auto-height ">
-        <div id="carouselExampleInterval"  class="carousel slide" data-ride="carousel">
+        <div id="carouselExampleInterval" class="carousel slide" data-ride="carousel">
             <ol class="carousel-indicators">
                 <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
                 <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
@@ -181,64 +203,73 @@
                     <img th:src="@{/img/Dunk.jpg}" width="100%" class="" alt="...">
                 </div>
             </div>
-            <button class="text-primary carousel-control-prev" type="button" data-target="#carouselExampleInterval" data-slide="prev">
+            <button class="text-primary carousel-control-prev" type="button" data-target="#carouselExampleInterval"
+                    data-slide="prev">
                 <span class="carousel-control-prev-icon " aria-hidden="true"></span>
                 <span class="sr-only text-primary">Previous</span>
             </button>
-            <button class="carousel-control-next" type="button" data-target="#carouselExampleInterval" data-slide="next">
+            <button class="carousel-control-next" type="button" data-target="#carouselExampleInterval"
+                    data-slide="next">
                 <span class="carousel-control-next-icon " aria-hidden="true"></span>
-                <span class="sr-only btn-dark btn-lg" >Next</span>
+                <span class="sr-only btn-dark btn-lg">Next</span>
             </button>
         </div>
     </div>
 
-    <div class="section sec2">
-        <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
-        <div th:if="${not #strings.isEmpty(itemSearchDto.searchQuery)}" class="center">
-            <p class="h3 font-weight-bold" th:text="${itemSearchDto.searchQuery} + '검색 결과'"></p>
-        </div>
+    <div class="section sec2 fp-completely ">
 
-        <div class="row">
-            <th:block th:each="item, status: ${items.getContent()}">
-                <div class="col-md-4">
-                    <div class="card">
-                        <a th:href="'/item/' +${item.id}" class="text-dark">
-                            <img th:src="${item.imgUrl}" class="card-img-top" th:alt="${item.itemNm}" height="400">
-                            <div class="card-body">
-                                <h4 class="card-title">[[${item.itemNm}]]</h4>
-                                <p class="card-text">[[${item.itemDetail}]]</p>
-                                <h3 class="card-title text-danger">[[${item.price}]]원</h3>
+        <div class="fp-auto-height content mx-auto scrollable-content" style="height: 95%">
+            <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
+            <div th:if="${not #strings.isEmpty(itemSearchDto.searchQuery)}" class="center">
+                <p class="h3 font-weight-bold" th:text="${itemSearchDto.searchQuery} + '검색 결과'"></p>
+            </div>
+            <div class="">
+                <h3 class="mx-auto">신규 등록 상품</h3>
+                <div class="row row-cols-1 ">
+                    <th:block th:each="item, status: ${items.getContent()}">
+                        <div class="col-md-4">
+                            <div class="card mb-3">
+                                <a th:href="'/item/' +${item.id}" class="text-dark">
+                                    <img th:src="${item.imgUrl}" class="img-fluid img-responsive"
+                                         th:alt="${item.itemNm}"
+                                         height="300">
+                                    <div class="card-body">
+                                        <h4 class="card-title">[[${item.itemNm}]]</h4>
+                                        <p class="card-text">[[${item.itemDetail}]]</p>
+                                        <h3 class="card-title text-danger">[[${item.price}]]원</h3>
+                                    </div>
+                                </a>
                             </div>
-                        </a>
-                    </div>
+                        </div>
+                    </th:block>
                 </div>
-            </th:block>
-        </div>
-        <!--페이징-->
-        <div th:with="start=${(items.number/maxPage)*maxPage + 1},
+            </div>
+            <!--페이징-->
+            <div th:with="start=${(items.number/maxPage)*maxPage + 1},
         end=(${(items.totalPages == 0) ? 1 : (start + (maxPage - 1) < items.totalPages ? start + (maxPage - 1) : items.totalPages)})">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${items.number eq 0}?'disabled':''">
-                    <a th:href="@{'/' + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number-1}}"
-                       aria-label='Previous' class="page-link">
-                        <span aria-hidden='true'>Previous</span>
-                    </a>
-                </li>
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${items.number eq 0}?'disabled':''">
+                        <a th:href="@{'/' + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number-1}}"
+                           aria-label='Previous' class="page-link">
+                            <span aria-hidden='true'>Previous</span>
+                        </a>
+                    </li>
 
-                <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}"
-                    th:classappend="${items.number eq page-1}?'active':''">
-                    <a th:href="@{'/' +'?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${page-1}}"
-                       th:inline="text" class="page-link">[[${page}]]</a>
-                </li>
+                    <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}"
+                        th:classappend="${items.number eq page-1}?'active':''">
+                        <a th:href="@{'/' +'?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${page-1}}"
+                           th:inline="text" class="page-link">[[${page}]]</a>
+                    </li>
 
-                <li class="page-item" th:classappend="${items.number+1 ge items.totalPages}?'disabled':''">
-                    <a th:href="@{'/' +'?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number+1}}"
-                       aria-label='Next' class="page-link">
-                        <span aria-hidden='true'>Next</span>
-                    </a>
-                </li>
+                    <li class="page-item" th:classappend="${items.number+1 ge items.totalPages}?'disabled':''">
+                        <a th:href="@{'/' +'?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number+1}}"
+                           aria-label='Next' class="page-link">
+                            <span aria-hidden='true'>Next</span>
+                        </a>
+                    </li>
 
-            </ul>
+                </ul>
+            </div>
         </div>
     </div>
 
