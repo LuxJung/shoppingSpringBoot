@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns="http://www.w3.org/1999/html"
       layout:decorate="~{layouts/layout1}">
 
 <head>
@@ -107,6 +107,47 @@
             });
         }
 
+        function addLike(){
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var cnt = 1;
+            var url = "/likeit";
+            var paramData = {
+                itemId : $("#itemId").val(),
+                count : $("#count").val()
+            };
+            console.log(itemId);
+            console.log(count);
+            var param = JSON.stringify(paramData);
+
+            $.ajax({
+                url      : url,
+                type     : "POST",
+                contentType : "application/json",
+                data     : param,
+                beforeSend : function(xhr){
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                dataType : "json",
+                cache   : false,
+                success  : function(result, status){
+                    alert("상품을 좋아요 했습니다.");
+                    location.href='/'; //좋아요 색상 넣기
+                },
+                error : function(jqXHR, status, error){
+
+                    if(jqXHR.status == '401'){
+                        alert('로그인 후 이용해주세요');
+                        location.href='/members/login';
+                    } else{
+                        alert(jqXHR.responseText);
+                    }
+
+                }
+            });
+        }
+
     </script>
 </th:block>
 
@@ -135,17 +176,38 @@
             height:auto;
             width:50%;
         }
+        .heart {
+            display: inline-block;
+            margin-left: 20px;
+            cursor: pointer;
+            position: relative;
+            transform: rotate(45deg);
+            width: 15px;
+            height: 15px;
+            background-color: #ccc;}
+
+        .heart::before {content: "";position: absolute;border-radius: 50%;width: 15px;height: 15px;background-color: #ccc;left: -50%;}
+        .heart::after {content: "";position: absolute;border-radius: 50%;width: 15px;height: 15px;background-color: #ccc;top: -50%;}
+
+        .heart:hover,
+        .heart:hover::before,
+        .heart:hover::after {
+            background-color: #ea2027;
+        }
     </style>
 </th:block>
 
 <div layout:fragment="content" style="margin-left:25%;margin-right:25%">
-
+    <!--<p th:text="${likeit}"></p>-->
     <input type="hidden" id="itemId" th:value="${item.id}">
 
     <div class="d-flex">
         <div class="repImgDiv">
             <img th:src="${item.itemImgDtoList[0].imgUrl}" class = "rounded repImg" th:alt="${item.itemNm}">
         </div>
+        <!--<span th:if="${likeit.likeItStatus == T(com.shop.constant.LikeItStatus).UN_LIKE_IT}" class="">좋아요 안누름</span>
+        <span th:unless="${likeit.likeItStatus == T(com.shop.constant.LikeItStatus).LIKE_IT}" class="">좋아요 누름</span>
+-->
         <div class="wd50">
             <span th:if="${item.itemSellStatus == T(com.shop.constant.ItemSellStatus).SELL}" class="badge badge-primary mgb-15">
                 판매중
@@ -153,7 +215,11 @@
             <span th:unless="${item.itemSellStatus == T(com.shop.constant.ItemSellStatus).SELL}" class="badge btn-danger mgb-15" >
                 품절
             </span>
+
+            <span class="heart" onclick="addLike()"></span>
+
             <div class="h4" th:text="${item.itemNm}"></div>
+
             <hr class="my-4">
 
             <div class="text-right">
@@ -174,10 +240,14 @@
                 <h5>결제 금액</h5>
                 <h3 name="totalPrice" id="totalPrice" class="font-weight-bold"></h3>
             </div>
+
             <div th:if="${item.itemSellStatus == T(com.shop.constant.ItemSellStatus).SELL}" class="text-right">
+
                 <button type="button" class="btn btn-light border border-primary btn-lg" onclick="addCart()">장바구니 담기</button>
                 <button type="button" class="btn btn-primary btn-lg" onclick="order()">주문하기</button>
+
             </div>
+
             <div th:unless="${item.itemSellStatus == T(com.shop.constant.ItemSellStatus).SELL}" class="text-right">
                 <button type="button" class="btn btn-danger btn-lg">품절</button>
             </div>

@@ -1,65 +1,63 @@
 package com.shop.service;
 
-import com.shop.dto.CartItemDto;
-import com.shop.entity.Cart;
-import com.shop.entity.CartItem;
-import com.shop.entity.Item;
-import com.shop.entity.Member;
-import com.shop.repository.CartItemRepository;
-import com.shop.repository.CartRepository;
-import com.shop.repository.ItemRepository;
-import com.shop.repository.MemberRepository;
+import com.shop.dto.*;
+import com.shop.entity.*;
+import com.shop.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.EntityNotFoundException;
-
-import com.shop.dto.CartDetailDto;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.thymeleaf.util.StringUtils;
-import com.shop.dto.CartOrderDto;
-import com.shop.dto.OrderDto;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class CartService {
+public class LikeitService {
 
     private final ItemRepository itemRepository;
     private final MemberRepository memberRepository;
-    private final CartRepository cartRepository;
-    private final CartItemRepository cartItemRepository;
+    private final LikeitRepository likeitRepository;
+    private final LikeitItemRepository likeitItemRepository;
     private final OrderService orderService;
 
-    public Long addCart(CartItemDto cartItemDto, String email){
-
-        Item item = itemRepository.findById(cartItemDto.getItemId())
+    public Long addLike(LikeitItemDto likeitItemDto, String email){
+        // 1. 좋아요 추가할 상품 엔티티 조회
+        Item item = itemRepository.findById(likeitItemDto.getItemId())
                 .orElseThrow(EntityNotFoundException::new);
+        // 2. 현재 로그인한 회원 엔티티 조회
         Member member = memberRepository.findByEmail(email);
-
-        Cart cart = cartRepository.findByMemberId(member.getId());
-        if(cart == null){
-            cart = Cart.createCart(member);
-            cartRepository.save(cart);
+        // 3. 현재 로그인한 회원의 좋아요 엔티티 조회
+        Likeit likeit = likeitRepository.findByMemberId(member.getId());
+        // 4. 상품을 처음으로 좋아요할 경우 해당 회원의 좋아요 엔티티를 생성
+        if(likeit == null){
+            likeit = Likeit.createLike(member);
+            likeitRepository.save(likeit);
         }
+        // 5.현재 좋아요가 이미 추가되어있는지 조회
+        LikeitItem savedLikeitItem = likeitItemRepository
+                .findByLikeitIdAndItemId(likeit.getId(), item.getId());
 
-        CartItem savedCartItem = cartItemRepository
-                .findByCartIdAndItemId(cart.getId(), item.getId());
-
-        if(savedCartItem != null){
-            savedCartItem.addCount(cartItemDto.getCount());
-            return savedCartItem.getId();
-        } else {
-            CartItem cartItem =
-                    CartItem
-                    .createCartItem(cart, item, cartItemDto.getCount());
-            cartItemRepository.save(cartItem);
-            return cartItem.getId();
+        if(savedLikeitItem != null){
+            // 6. 좋아요 했던 상품일 경우 기존 수량에 추가 -----> 좋아요 해제로 변경할것 (했음)
+            //savedLikeitItem.unlikeit();
+            //System.out.println(String.valueOf(savedLikeitItem.getLikeit().getLikeItStatus()));
+            savedLikeitItem.addLikeitCount(likeitItemDto.getCount());
+            return savedLikeitItem.getId();
+        } else {// 좋아요가 처음일 경우
+            // 7. 좋아요 엔티티, 상품 엔티티 좋아요 수를 이용해 LikeItem 엔티티 생섵
+            LikeitItem likeitItem =
+                    LikeitItem
+                    .createLikeItem(likeit, item, likeitItemDto.getCount());
+            // 8.좋아요 추가할 상품을 저장
+            likeitItemRepository.save(likeitItem);
+            return likeitItem.getId();
         }
     }
 
+
+
+
+/*
     @Transactional(readOnly = true)
     public List<CartDetailDto> getCartList(String email){
 
@@ -126,5 +124,5 @@ public class CartService {
 
         return orderId;
     }
-
+*/
 }

@@ -1,5 +1,15 @@
 package com.shop.controller;
 
+import com.shop.constant.LikeItStatus;
+import com.shop.dto.LikeitItemDto;
+import com.shop.entity.Likeit;
+import com.shop.entity.LikeitItem;
+import com.shop.entity.Member;
+import com.shop.repository.ItemRepository;
+import com.shop.repository.LikeitItemRepository;
+import com.shop.repository.LikeitRepository;
+import com.shop.repository.MemberRepository;
+import com.shop.service.LikeitService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -13,6 +23,8 @@ import javax.validation.Valid;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +42,11 @@ import java.util.Optional;
 public class ItemController {
 
     private final ItemService itemService;
-
+    private final LikeitService likeitService;
+    private final ItemRepository itemRepository;
+    private final MemberRepository memberRepository;
+    private final LikeitItemRepository likeitItemRepository;
+    private final LikeitRepository likeitRepository;
     @GetMapping(value = "/admin/item/new")
     public String itemForm(Model model){
         model.addAttribute("itemFormDto", new ItemFormDto());
@@ -100,7 +116,7 @@ public class ItemController {
     @GetMapping(value = {"/admin/items", "/admin/items/{page}"})
     public String itemManage(ItemSearchDto itemSearchDto, @PathVariable("page") Optional<Integer> page, Model model){
 
-        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 3);
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 10);
         Page<Item> items = itemService.getAdminItemPage(itemSearchDto, pageable);
 
         model.addAttribute("items", items);
@@ -111,9 +127,19 @@ public class ItemController {
     }
 
     @GetMapping(value = "/item/{itemId}")
-    public String itemDtl(Model model, @PathVariable("itemId") Long itemId){
+    public String itemDtl(Model model, @PathVariable("itemId") Long itemId,
+                          LikeitItemDto likeitItemDto, String email){
         ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
         model.addAttribute("item", itemFormDto);
+       /* Item item = itemRepository.findById(likeitItemDto.getItemId())
+                .orElseThrow(EntityNotFoundException::new);
+        // 2. 현재 로그인한 회원 엔티티 조회
+        Member member = memberRepository.findByEmail(email);
+        // 5.현재 좋아요가 이미 추가되어있는지 조회
+        Likeit likeit = likeitRepository.findByMemberId(member.getId());
+        LikeitItem savedLikeitItem = likeitItemRepository.findByLikeitIdAndItemId(likeit.getId(), item.getId());
+        System.out.println(savedLikeitItem.getLikeit());
+        model.addAttribute("likeit", savedLikeitItem.getLikeit().getLikeItStatus());*/
         return "item/itemDtl";
     }
 

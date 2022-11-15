@@ -1,8 +1,16 @@
 package com.shop.controller;
 
+import com.shop.dto.CartDetailDto;
+import com.shop.dto.ItemSearchDto;
+import com.shop.dto.MainItemDto;
 import com.shop.dto.MemberFormDto;
+import com.shop.service.CartService;
+import com.shop.service.ItemService;
 import com.shop.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import org.springframework.validation.BindingResult;
 import javax.validation.Valid;
+import java.security.Principal;
+import java.util.List;
+import java.util.Optional;
 
 @RequestMapping("/members")
 @Controller
@@ -31,11 +42,9 @@ public class MemberController {
 
     @PostMapping(value = "/new")
     public String newMember(@Valid MemberFormDto memberFormDto, BindingResult bindingResult, Model model){
-
         if(bindingResult.hasErrors()){
             return "member/memberForm";
         }
-
         try {
             Member member = Member.createMember(memberFormDto, passwordEncoder);
             memberService.saveMember(member);
@@ -43,7 +52,6 @@ public class MemberController {
             model.addAttribute("errorMessage", e.getMessage());
             return "member/memberForm";
         }
-
         return "redirect:/";
     }
 
@@ -57,5 +65,7 @@ public class MemberController {
         model.addAttribute("loginErrorMsg", "아이디 또는 비밀번호를 확인해주세요");
         return "/member/memberLoginForm";
     }
+
+
 
 }
