@@ -65,10 +65,10 @@
             $('#fullpage').fullpage({
                 autoScrolling: true,
                 scrollHorizontally: true,
-                sectionsColor: ['#fff', '#000000', '#fff', '#999', '#666'],
-                anchors: ['sec1', 'sec2', 'sec3', 'sec4', 'sec5'],
+                sectionsColor: ['#fff', '#000000', '#fff', '#999', '#666', '#fff'],
+                anchors: ['sec1', 'sec2', 'sec3', 'sec4', 'sec5', 'sec6'],
                 menu: '#menu',
-                normalScrollElements: '.scrollable-content',
+                //normalScrollElements: '.scrollable-content',
                 scrollOverflow: true,
                 scrollingSpeed: 600,
                 //scrollBar: true,
@@ -222,11 +222,10 @@
             </button>
         </div>
     </div>
-
     <!--상품목록-->
     <div class="section sec2">
         <h3 class="newgoods">신규 등록 상품</h3>
-    <div class="fp-completely fp-auto-height">
+    <div class="fp-completely fp-auto-height ">
         <div class=" content mx-auto scrollable-content" style="height: 95%">
 
             <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
@@ -282,11 +281,11 @@
         <div class="swiper-container">
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
-                    <h1 style="height: 50vh; background-color: antiquewhite;">Section3</h1>
+                    <h1 style="height: 100vh; margin-top: 0; padding-top: 0; background-color: antiquewhite;">Section3</h1>
                     Slide 1
                 </div>
                 <div class="swiper-slide">
-                    <h1 style="height: 50vh; background-color: antiquewhite;">Section3</h1>
+                    <h1 style="height: 100vh; margin-top: 0; padding-top: 0; background-color: antiquewhite;">Section3</h1>
                     Slide 2
                 </div>
             </div>
