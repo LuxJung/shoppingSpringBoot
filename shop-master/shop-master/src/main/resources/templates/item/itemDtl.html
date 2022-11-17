@@ -92,7 +92,7 @@
                 cache   : false,
                 success  : function(result, status){
                     alert("상품을 장바구니에 담았습니다.");
-                    location.href='/';
+                    location.href='/cart';
                 },
                 error : function(jqXHR, status, error){
 
@@ -200,9 +200,11 @@
 <div layout:fragment="content" style="margin-left:25%;margin-right:25%">
     <!--<p th:text="${likeit}"></p>-->
     <input type="hidden" id="itemId" th:value="${item.id}">
+    <h3 style="margin-top:100px; ">제품 정보</h3>
+    <hr>
+    <div class="d-flex" style="margin-top:100px; ">
 
-    <div class="d-flex">
-        <div class="repImgDiv">
+        <div class="text-center" style="margin-right:50px; ">
             <img th:src="${item.itemImgDtoList[0].imgUrl}" class = "rounded repImg" th:alt="${item.itemNm}">
         </div>
         <!--<span th:if="${likeit.likeItStatus == T(com.shop.constant.LikeItStatus).UN_LIKE_IT}" class="">좋아요 안누름</span>
@@ -253,10 +255,11 @@
             </div>
         </div>
     </div>
+    <hr>
 
-    <div class="jumbotron jumbotron-fluid mgt-30">
+    <div class="jumbotron jumbotron-fluid mgt-30 bg-white">
         <div class="container">
-            <h4 class="display-5">상품 상세 설명</h4>
+            <h4 class="display-5">상품 설명</h4>
             <hr class="my-4">
             <p class="lead" th:text="${item.itemDetail}"></p>
         </div>

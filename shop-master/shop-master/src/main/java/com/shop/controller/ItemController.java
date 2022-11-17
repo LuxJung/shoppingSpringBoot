@@ -2,6 +2,7 @@ package com.shop.controller;
 
 import com.shop.constant.LikeItStatus;
 import com.shop.dto.LikeitItemDto;
+import com.shop.dto.MainItemDto;
 import com.shop.entity.Likeit;
 import com.shop.entity.LikeitItem;
 import com.shop.entity.Member;
@@ -124,6 +125,18 @@ public class ItemController {
         model.addAttribute("maxPage", 5);
 
         return "item/itemMng";
+    }
+    @GetMapping(value = {"/itemsrch/items", "/itemsrch/items/{page}"})
+    public String itemManage2(ItemSearchDto itemSearchDto, Optional<Integer> page, Model model){
+
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 6);
+        Page<MainItemDto> items = itemService.getMainItemPage(itemSearchDto, pageable);
+
+        model.addAttribute("items", items);
+        model.addAttribute("itemSearchDto", itemSearchDto);
+        model.addAttribute("maxPage", 5);
+
+        return "item/itemsrch";
     }
 
     @GetMapping(value = "/item/{itemId}")

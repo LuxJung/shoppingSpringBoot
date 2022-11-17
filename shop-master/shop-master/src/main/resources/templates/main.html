@@ -20,7 +20,11 @@
             box-sizing: border-box;
 
         }
-        .outline{border: 1px solid #000000}
+
+        .outline {
+            border: 1px solid #000000
+        }
+
         .banner {
             position: absolute;
             top: 0;
@@ -65,7 +69,7 @@
             $('#fullpage').fullpage({
                 autoScrolling: true,
                 scrollHorizontally: true,
-                sectionsColor: ['#fff', '#000000', '#fff', '#999', '#666', '#fff'],
+                sectionsColor: ['#fff', '#000000', '#fff', '#d7d4d4', '#666', '#fff'],
                 anchors: ['sec1', 'sec2', 'sec3', 'sec4', 'sec5', 'sec6'],
                 menu: '#menu',
                 //normalScrollElements: '.scrollable-content',
@@ -136,6 +140,24 @@
                 },
             });
         });
+        $(document).ready(function () {
+            $("#searchBtn").on("click", function (e) {
+                e.preventDefault();
+                page(0);
+            });
+        });
+
+        function page(page) {
+            var searchDateType = "all";
+            var searchSellStatus = "";
+            var searchBy = "itemNm";
+            var searchQuery = $("#searchQuery").val();
+
+            location.href = "/itemsrch/items/" + page + "?searchDateType=" + searchDateType
+                + "&searchSellStatus=" + searchSellStatus
+                + "&searchBy=" + searchBy
+                + "&searchQuery=" + searchQuery;
+        }
 
         function bindDomEvent() {
             $(".custom-file-input").on("change", function () {
@@ -157,7 +179,8 @@
     <!--헤더-->
     <div class="section fp-auto-height active sec1 ">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" th:href="@{/}"><img th:src="@{/img/logo.png}" width="50" height="50" alt="logo"/></a>
+            <a class="navbar-brand" th:href="@{/}"><img th:src="@{/img/logo.png}" width="50" height="50"
+                                                        alt="logo"/></a>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li sec:authorize="hasAnyAuthority('ROLE_ADMIN')" class="nav-item">
@@ -187,11 +210,11 @@
             </div>
         </nav>
         <div class="btn-toolbar justify-content-end m-3">
-            <div class="input-group">
-                <input name="searchQuery" type="search" placeholder="Search" class="form-control mr-sm-2">
-                <button type="submit" class="btn btn-outline-success my-2 my-sm-0">Search</button>
+            <div class="input-group" th:object="${itemSearchDto}">
+                <input th:field="*{searchQuery}" type="text" class="form-control mr-sm-2" placeholder="Search">
+                <!-- <input name="searchQuery" type="search" placeholder="Search" class="form-control mr-sm-2">-->
+                <button type="submit" id="searchBtn" class="btn btn-outline-success my-2 my-sm-0">Search</button>
             </div>
-
         </div>
     </div>
     <!--배너-->
@@ -228,81 +251,143 @@
     <!--상품목록-->
     <div class="section sec2">
         <h3 class="newgoods">신규 등록 상품</h3>
-    <div class="fp-completely fp-auto-height ">
-        <div class=" content mx-auto scrollable-content" style="height: 95%">
+        <div class="fp-completely fp-auto-height ">
+            <div class=" content mx-auto scrollable-content" style="height: 95%">
 
-            <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
-            <div th:if="${not #strings.isEmpty(itemSearchDto.searchQuery)}" class="center">
-                <p class="h3 font-weight-bold" th:text="${itemSearchDto.searchQuery} + '검색 결과'"></p>
-            </div>
-            <div class="row row-cols-1 ">
-                <th:block th:each="item, status: ${items.getContent()}">
-                    <div class="col-md-4 ">
-                        <div class="card mb-3 outline">
-                            <a th:href="'/item/' +${item.id}" class="text-dark">
-                                <img th:src="${item.imgUrl}" class="img-fluid img-responsive"
-                                     th:alt="${item.itemNm}"
-                                     height="300">
-                                <div class="card-body">
-                                    <h4 class="card-title">[[${item.itemNm}]]</h4>
-                                    <p class="card-text">[[${item.itemDetail}]]</p>
-                                    <h3 class="card-title text-danger">[[${item.price}]]원</h3>
-                                </div>
-                            </a>
+                <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
+                <div th:if="${not #strings.isEmpty(itemSearchDto.searchQuery)}" class="center">
+                    <p class="h3 font-weight-bold" th:text="${itemSearchDto.searchQuery} + '검색 결과'"></p>
+                </div>
+                <div class="row row-cols-1 ">
+                    <th:block th:each="item, status: ${items.getContent()}">
+                        <div class="col-md-4 ">
+                            <div class="card mb-3 outline">
+                                <a th:href="'/item/' +${item.id}" class="text-dark">
+                                    <img th:src="${item.imgUrl}" class="img-fluid img-responsive"
+                                         th:alt="${item.itemNm}"
+                                         height="300">
+                                    <div class="card-body">
+                                        <h4 class="card-title">[[${item.itemNm}]]</h4>
+                                        <p class="card-text">[[${item.itemDetail}]]</p>
+                                        <h3 class="card-title text-danger">[[${item.price}]]원</h3>
+                                    </div>
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                </th:block>
-            </div>
-            <!--페이징-->
-            <div th:with="start=${(items.number/maxPage)*maxPage + 1},
+                    </th:block>
+                </div>
+                <!--페이징-->
+                <div th:with="start=${(items.number/maxPage)*maxPage + 1},
             end=(${(items.totalPages == 0) ? 1 : (start + (maxPage - 1) < items.totalPages ? start + (maxPage - 1) : items.totalPages)})">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item" th:classappend="${items.number eq 0}?'disabled':''">
-                        <a th:href="@{'/' + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number-1}}"
-                           aria-label='Previous' class="page-link">
-                            <span aria-hidden='true'>&lt;</span>
-                        </a>
-                    </li>
-                    <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}"
-                        th:classappend="${items.number eq page-1}?'active':''">
-                        <a th:href="@{'/' +'?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${page-1}}"
-                           th:inline="text" class="page-link">[[${page}]]</a>
-                    </li>
-                    <li class="page-item" th:classappend="${items.number+1 ge items.totalPages}?'disabled':''">
-                        <a th:href="@{'/' +'?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number+1}}"
-                           aria-label='Next' class="page-link">
-                            <span aria-hidden='true'>&gt;</span>
-                        </a>
-                    </li>
-                </ul>
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${items.number eq 0}?'disabled':''">
+                            <a th:href="@{'/' + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number-1}}"
+                               aria-label='Previous' class="page-link">
+                                <span aria-hidden='true'>&lt;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}"
+                            th:classappend="${items.number eq page-1}?'active':''">
+                            <a th:href="@{'/' +'?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${page-1}}"
+                               th:inline="text" class="page-link">[[${page}]]</a>
+                        </li>
+                        <li class="page-item" th:classappend="${items.number+1 ge items.totalPages}?'disabled':''">
+                            <a th:href="@{'/' +'?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number+1}}"
+                               aria-label='Next' class="page-link">
+                                <span aria-hidden='true'>&gt;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 
     <div class="section sec3">
         <div class="swiper-container">
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
-                    <h1 style="height: 100vh; margin-top: 0; padding-top: 0; background-color: antiquewhite;">Section3</h1>
-                    Slide 1
+
+                    <img th:src="@{/img/004.jpg}" width="100%" class="" alt="...">
                 </div>
                 <div class="swiper-slide">
-                    <h1 style="height: 100vh; margin-top: 0; padding-top: 0; background-color: antiquewhite;">Section3</h1>
-                    Slide 2
+                    <img th:src="@{/img/006.jpg}" width="100%" class="" alt="...">
                 </div>
             </div>
             <!-- Add Pagination -->
             <div class="swiper-pagination"></div>
         </div>
     </div>
-    <div class="section sec4 ">
-        <h1>Section1</h1>
-    </div>
-    <footer class="section sec5 fp-auto-height page-footer font-small cyan darken-3">
-        <div class="footer-copyright text-center py-3">
-            2020 Shopping Mall Example WebSite
+    <div class="section sec4 fp-auto-height bg-white">
+        <div class="container ">
+            <div class="row mb-2 mt-2">
+                <div class="col-md-6">
+                    <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                        <div class="col p-4 d-flex flex-column position-static">
+                            <strong class="d-inline-block mb-2 text-success">Design</strong>
+                            <h3 class="mb-0">Post title</h3>
+                            <div class="mb-1 text-muted">Nov 11</div>
+                            <p class="mb-auto">This is a wider card with supporting text below as a natural lead-in to
+                                additional content.</p>
+                            <a href="#" class="stretched-link">Continue reading</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                        <div class="col p-4 d-flex flex-column position-static">
+                            <strong class="d-inline-block mb-2 text-success">Design</strong>
+                            <h3 class="mb-0">Post title</h3>
+                            <div class="mb-1 text-muted">Nov 11</div>
+                            <p class="mb-auto">This is a wider card with supporting text below as a natural lead-in to
+                                additional content.</p>
+                            <a href="#" class="stretched-link">Continue reading</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row mb-2 mt-2">
+                <div class="col-md-6">
+                    <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                        <div class="col p-4 d-flex flex-column position-static">
+                            <strong class="d-inline-block mb-2 text-success">Design</strong>
+                            <h3 class="mb-0">Post title</h3>
+                            <div class="mb-1 text-muted">Nov 11</div>
+                            <p class="mb-auto">This is a wider card with supporting text below as a natural lead-in to
+                                additional content.</p>
+                            <a href="#" class="stretched-link">Continue reading</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                        <div class="col p-4 d-flex flex-column position-static">
+                            <strong class="d-inline-block mb-2 text-success">Design</strong>
+                            <h3 class="mb-0">Post title</h3>
+                            <div class="mb-1 text-muted">Nov 11</div>
+                            <p class="mb-auto">This is a wider card with supporting text below as a natural lead-in to
+                                additional content.</p>
+                            <a href="#" class="stretched-link">Continue reading</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
-    </footer>
-</div>
+        <hr>
+        <footer class="section sec5 fp-auto-height page-footer font-small cyan darken-3">
+            <div class="footer-copyright text-center py-3">
+                2022 이정민 스프링부트 쇼핑몰<br><br><br>시간이 된다면?<br><br>
+                검색기능 보완, 마이페이지, 찜, 게시판 + 갤러리, 댓글, 결제모듈, 예외처리<br>
+                검색기능: 메인에서만 됨..전체 다 될 수 있도록구현 thymeleaf header에서 인식 불가 해결하기<br>
+                마이페이지: 장바구니, 찜 상품, 구매내역, 본인 글, 회원정보 넣어두기<br>
+                찜: 마무리 작업하기<br>
+                게시판 + 갤러리: 상품과 연관된..sns형식<br>
+                댓글: 한번도 안해봄;;<br>
+                결제모듈: import 마저 붙이기<br>
+                예외처리: alert좀 붙이고 가입시 유효성검사<br>
+            </div>
+        </footer>
+    </div>
 </html>
