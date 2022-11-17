@@ -157,31 +157,31 @@
     <!--헤더-->
     <div class="section fp-auto-height active sec1 ">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="/"><img th:src="@{/img/logo.png}" width="50" height="50" alt="logo"/></a>
+            <a class="navbar-brand" th:href="@{/}"><img th:src="@{/img/logo.png}" width="50" height="50" alt="logo"/></a>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li sec:authorize="hasAnyAuthority('ROLE_ADMIN')" class="nav-item">
-                        <a class="nav-link" href="/admin/item/new">상품 등록</a>
+                        <a class="nav-link" th:href="@{/admin/item/new}">상품 등록</a>
                     </li>
                     <li sec:authorize="hasAnyAuthority('ROLE_ADMIN')" class="nav-item">
-                        <a class="nav-link" href="/admin/items">상품 관리</a>
+                        <a class="nav-link" th:href="@{/admin/items}">상품 관리</a>
                     </li>
                     <li sec:authorize="isAuthenticated()" class="nav-item">
-                        <a class="nav-link" href="/cart">장바구니</a>
+                        <a class="nav-link" th:href="@{/cart}">장바구니</a>
                     </li>
                     <li sec:authorize="isAuthenticated()" class="nav-item">
-                        <a class="nav-link" href="/orders">구매이력</a>
+                        <a class="nav-link" th:href="@{/orders}">구매이력</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav justify-content-end mr-3">
                     <li sec:authorize="isAnonymous()" class="nav-item">
-                        <a class="nav-link" href="/members/login">로그인</a>
+                        <a class="nav-link" th:href="@{/members/login}">로그인</a>
                     </li>
                     <li sec:authorize="isAuthenticated()" class="nav-item">
-                        <a class="nav-link" href="/members/mypage">마이페이지</a>
+                        <a class="nav-link" th:href="@{/members/mypage}">마이페이지</a>
                     </li>
                     <li sec:authorize="isAuthenticated()" class="nav-item">
-                        <a class="nav-link" href="/members/logout">로그아웃</a>
+                        <a class="nav-link" th:href="@{/members/logout}">로그아웃</a>
                     </li>
                 </ul>
             </div>
