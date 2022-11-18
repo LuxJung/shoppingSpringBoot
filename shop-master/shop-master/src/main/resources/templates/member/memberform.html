@@ -29,7 +29,7 @@
 <div layout:fragment="content">
     <div class="container" style="width: 30%; height: 900px;">
 
-    <form action="/members/new" role="form" style="width:400px; height: 600px;padding-top: 200px; margin: 0 auto;" method="post"  th:object="${memberFormDto}">
+    <form th:action="@{/members/new}" role="form" style="width:400px; height: 600px;padding-top: 200px; margin: 0 auto;" method="post"  th:object="${memberFormDto}">
         <h2>회원가입</h2>
         <hr>
         <div class="form-group">

@@ -46,7 +46,7 @@
                 <th:block th:each="item, status: ${items.getContent()}">
                     <div class="col-md-4 ">
                         <div class="card mb-3 outline">
-                            <a th:href="'/item/' +${item.id}" class="text-dark">
+                            <a th:href="@{'/item/' +${item.id}}" class="text-dark">
                                 <img th:src="${item.imgUrl}" class="img-fluid img-responsive"
                                      th:alt="${item.itemNm}"
                                      height="300">

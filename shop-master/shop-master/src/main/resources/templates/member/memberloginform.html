@@ -15,7 +15,7 @@
 <div layout:fragment="content">
   <div class="container" style="width: 30%; height: 600px;">
 
-  <form role="form" method="post" style="width:400px; height: 600px;padding-top: 200px; margin: 0 auto;" class="form-signin" action="/members/login">
+  <form role="form" method="post" style="width:400px; height: 600px;padding-top: 200px; margin: 0 auto;" class="form-signin" th:action="@{/members/login}">
     <h2>로그인</h2>
     <hr>
     <div class="form-group">
